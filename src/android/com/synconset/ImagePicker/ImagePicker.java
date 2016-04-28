@@ -17,11 +17,47 @@ import android.content.Intent;
 import android.util.Log;
 
 public class ImagePicker extends CordovaPlugin {
+
+  private static final String ACTION_GET_PICTURES = "getPictures";
+  private static final String ACTION_HAS_READ_PERMISSION = "hasReadPermission";
+  private static final String ACTION_REQUEST_READ_PERMISSION = "requestReadPermission";
+
+  if (ACTION_HAS_READ_PERMISSION.equals(action)) {
+            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, hasReadPermission()));
+            return true;
+
+        } else if (ACTION_REQUEST_READ_PERMISSION.equals(action)) {
+            requestReadPermission();
+            return true;
+        }else if (ACTION_GET_PICTURES.equals(action)) {
+            final JSONObject params = args.getJSONObject(0);
+            final Intent imagePickerIntent = new Intent(cordova.getActivity(), MultiImageChooserActivity.class);
+            int max = 20;
+            int desiredWidth = 0;
+            int desiredHeight = 0;
+            int quality = 100;
+            int outputType = 0;
+            if (params.has("maximumImagesCount")) {
+                max = params.getInt("maximumImagesCount");
+            }
+            if (params.has("width")) {
+                desiredWidth = params.getInt("width");
+            }
+            if (params.has("height")) {
+                desiredWidth = params.getInt("height");
+            }
+            if (params.has("quality")) {
+                quality = params.getInt("quality");
+            }
+            if (params.has("outputType")) {
+                outputType = params.getInt("outputType");
+            }
+
 	public static String TAG = "ImagePicker";
-	 
+
 	private CallbackContext callbackContext;
 	private JSONObject params;
-	 
+
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		 this.callbackContext = callbackContext;
 		 this.params = args.getJSONObject(0);
@@ -53,7 +89,7 @@ public class ImagePicker extends CordovaPlugin {
 		}
 		return true;
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && data != null) {
 			ArrayList<String> fileNames = data.getStringArrayListExtra("MULTIPLEFILENAMES");
